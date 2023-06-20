@@ -72,7 +72,7 @@ jobs:
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
-  test-frontend:
+  test-client:
     docker:
       - image: circleci/node:18.16.0
     steps:
@@ -86,7 +86,7 @@ jobs:
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
-  scan-frontend:
+  scan-client:
     docker:
       - image: circleci/node:13.8.0
     steps:
@@ -100,7 +100,7 @@ jobs:
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
-  scan-backend:
+  scan-server:
     docker:
       - image: circleci/node:13.8.0
     steps:
@@ -404,12 +404,12 @@ workflows:
     jobs:
       - build-client
       - build-server
-      - test-frontend:
+      - test-client:
           requires: [build-client]
-      - scan-backend:
+      - scan-client:
           requires: [build-client]
-      - scan-frontend:
-          requires: [build-frontend]
+      - scan-server:
+          requires: [build-server]
       - deploy-infrastructure:
           requires: [test-client, test-server, scan-client, scan-server]
           filters:
