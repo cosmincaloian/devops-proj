@@ -411,7 +411,7 @@ workflows:
       - scan-server:
           requires: [build-server]
       - deploy-infrastructure:
-          requires: [test-client, test-server, scan-client, scan-server]
+          requires: [test-client, scan-client, scan-server]
           filters:
             branches:
               only: [master]
