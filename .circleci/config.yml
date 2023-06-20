@@ -47,7 +47,7 @@ commands:
 jobs:
   build-client:
     docker:
-      - image: circleci/node:18.16.0
+      - image: cimg/node:18.16.0
     steps:
       - checkout
       - run:
@@ -61,7 +61,7 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   build-server:
     docker:
-      - image: circleci/node:18.16.0
+      - image: cimg/node:18.16.0
     steps:
       - checkout
       - run:
@@ -74,7 +74,7 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   test-client:
     docker:
-      - image: circleci/node:18.16.0
+      - image: cimg/node:18.16.0
     steps:
       - checkout
       - run:
@@ -88,7 +88,7 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   scan-client:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - run:
@@ -102,7 +102,7 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   scan-server:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - run:
