@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import * as process from "process";
-import fetch from 'node-fetch';
 
 function add() {
   fetch( process.env.SERVER_URL + "/poll", {
