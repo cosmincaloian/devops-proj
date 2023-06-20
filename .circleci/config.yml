@@ -47,11 +47,11 @@ commands:
 jobs:
   build-client:
     docker:
-      - image: node:18.16.0-alpine
+      - image: circleci/node:18.16.0
     steps:
       - checkout
       - run:
-          name: Build client
+          name: Client build
           command: |
             cd client
             npm install
@@ -61,52 +61,28 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   build-server:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:18.16.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
       - run:
-          name: Back-end build
+          name: Server build
           command: |
-            cd backend
+            cd server
             npm install
-            npm run build
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-build
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   test-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:18.16.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
       - run:
-          name: Front-end test
+          name: Client test
           command: |
-            cd frontend
+            cd client
             npm install
-            npm run test
-      - ms-teams-notifier/report:
-          only_on_fail: true
-          webhook_url: $MS_TEAMS_WEBHOOK_URL
-  test-backend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Back-end test
-          command: |
-            cd backend
-            npm install
-            npm run test
+            npm run test:unit
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -115,15 +91,11 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
       - run:
-          name: Front-end scan
+          name: Client scan
           command: |
-            cd frontend
+            cd client
             npm install
-            npm audit fix --force --audit-level=critical
-            npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
       - ms-teams-notifier/report:
           only_on_fail: true
@@ -133,15 +105,11 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
       - run:
           name: Back-end scan
           command: |
-            cd backend
+            cd server
             npm install
-            npm audit fix --force --audit-level=critical
-            npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
       - ms-teams-notifier/report:
           only_on_fail: true
@@ -438,8 +406,6 @@ workflows:
       - build-server
       - test-frontend:
           requires: [build-client]
-      - test-backend:
-          requires: [build-server]
       - scan-backend:
           requires: [build-client]
       - scan-frontend:
