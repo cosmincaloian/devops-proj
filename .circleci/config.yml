@@ -78,6 +78,7 @@ jobs:
       - image: cimg/go:1.17
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Client test
           command: |
@@ -89,9 +90,10 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   scan-client:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/go:1.17
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Client scan
           command: |
@@ -103,9 +105,10 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   scan-server:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/go:1.17
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Back-end scan
           command: |
