@@ -125,6 +125,27 @@ jobs:
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
+  push-images:
+    docker:
+      - image: cimg/go:1.17
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Push client image
+          command: |
+            cd client
+            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
+            docker push cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7}
+      - run:
+          name: Push server image
+          command: |
+            cd server
+            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
+            docker push cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7}
+      - ms-teams-notifier/report:
+          only_on_fail: true
+          webhook_url: $MS_TEAMS_WEBHOOK_URL
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
