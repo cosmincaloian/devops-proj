@@ -43,12 +43,12 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC
-      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: !Ref PublicSubnet2CIDR
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub devops-${ID} Public Subnet (AZ1)
+          Value: !Sub devops-${ID} Public Subnet (AZ2)
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
