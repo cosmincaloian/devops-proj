@@ -1,0 +1,48 @@
+Description: >
+  Devops project
+
+Parameters:
+  WorkId:
+    Description: Unique identifier.
+    Type: String
+    Default: devops-proj
+  EKSRoleArn:
+    Type: String
+    Default: arn:aws:iam::432737993985:role/myEKSClusterRole
+  EKSNodeGroupRoleArn:
+    Type: String
+    Default: arn:aws:iam::432737993985:role/myEKSWorkerNodeRole
+
+Resources:
+  EKSClusterInstances:
+    Type: AWS::EKS::Cluster
+    Properties:
+      KubernetesNetworkConfig:
+        IpFamily: ipv4
+      Name: ${WorkId}
+      ResourcesVpcConfig:
+        SubnetIds:
+          - subnet-09d1bf4819361643e
+          - subnet-0693f59a0d958a86c
+          - subnet-061e3dc3c236394ee
+      RoleArn: !Ref EKSRoleArn
+      Tags:
+        - Key: Name
+          Value: !Sub ${WorkId}
+      Version: 1.27
+  EKSClusterNodeGroup:
+    Type: AWS::EKS::Nodegroup
+    Properties:
+      AmiType: AL2_x86_64
+      CapacityType: ON_DEMAND
+      ClusterName: !Ref EKSClusterInstances
+      DiskSize: 20
+      InstanceTypes:
+        - t3.medium
+      NodegroupName: ${WorkId}-ng
+      NodeRole: !Ref EKSNodeGroupRoleArn
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+      Tags:
+        Name: !Sub ${WorkId}-eks-ng
