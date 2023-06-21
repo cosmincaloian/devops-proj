@@ -47,15 +47,21 @@ commands:
 jobs:
   build-client:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/go:1.17
     steps:
       - checkout
       - run:
-          name: Client build
+          name: Lint dockerfile
           command: |
-            cd client
-            npm install
-            npm run build
+            wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64
+            chmod +x ./hadolint
+            ./hadolint server/Dockerfile
+      - setup_remote_docker
+      - run:
+          name: Server build
+          command: |
+            cd server
+            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -81,30 +87,31 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   test-client:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/go:1.17
     steps:
       - checkout
+      - setup_remote_docker
       - run:
-          name: Testing
+          name: Test client
           command: |
             cd client
-            npm install
-            npm run test:unit
-            npm run lint
+            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
+            docker run cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} npm run test:unit
+            docker run cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} npm run lint
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   scan-client:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/go:1.17
     steps:
       - checkout
       - run:
           name: Client scan
           command: |
             cd client
-            npm install
-            npm audit --audit-level=critical
+            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
+            docker run cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} npm audit --audit-level=critical
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -136,6 +143,13 @@ jobs:
             docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
             echo $DOCKER_HUB_PASS | docker login --username 'cosmincaloian' --password-stdin
             docker push cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7}
+      - run:
+          name: Push client image
+          command: |
+            cd client
+            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
+            echo $DOCKER_HUB_PASS | docker login --username 'cosmincaloian' --password-stdin
+            docker push cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7}
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -440,22 +454,22 @@ workflows:
           filters:
             branches:
               only: [master]
-      - deploy-infrastructure:
-          requires: [push-images, scan-server]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+#      - deploy-infrastructure:
+#          requires: [push-images]
+#          filters:
+#            branches:
+#              only: [master]
+#      - configure-infrastructure:
+#          requires: [deploy-infrastructure]
+#      - run-migrations:
+#          requires: [configure-infrastructure]
+#      - deploy-frontend:
+#          requires: [run-migrations]
+#      - deploy-backend:
+#          requires: [run-migrations]
+#      - smoke-test:
+#          requires: [deploy-backend, deploy-frontend]
+#      - cloudfront-update:
+#          requires: [smoke-test]
+#      - cleanup:
+#          requires: [cloudfront-update]
