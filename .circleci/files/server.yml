@@ -97,7 +97,6 @@ Resources:
       CapacityType: ON_DEMAND
       ClusterName: devops-project
       DiskSize: 20
-      ForceUpdateEnabled: Boolean
       InstanceTypes:
         - t3.medium
       NodegroupName: devops-project-ng
