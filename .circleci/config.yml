@@ -134,7 +134,7 @@ jobs:
           command: |
             cd server
             docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
-            echo $DOCKER_HUB_PASS | | docker login --username 'cosmincaloian' --password-stdin
+            echo $DOCKER_HUB_PASS | docker login --username 'cosmincaloian' --password-stdin
             docker push cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7}
       - ms-teams-notifier/report:
           only_on_fail: true
