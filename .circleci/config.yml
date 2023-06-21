@@ -93,13 +93,6 @@ jobs:
             docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
             echo $DOCKER_HUB_PASS | docker login --username 'cosmincaloian' --password-stdin
             docker push cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7}
-      - run:
-          name: Push client image
-          command: |
-            cd client
-            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
-            echo $DOCKER_HUB_PASS | docker login --username 'cosmincaloian' --password-stdin
-            docker push cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7}
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
