@@ -106,6 +106,7 @@ jobs:
       - image: cimg/go:1.17
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Client scan
           command: |
@@ -450,7 +451,7 @@ workflows:
       - scan-server:
           requires: [build-server]
       - push-images:
-          requires: [test-client, scan-client]
+          requires: [test-client, scan-client, scan-server]
           filters:
             branches:
               only: [master]
