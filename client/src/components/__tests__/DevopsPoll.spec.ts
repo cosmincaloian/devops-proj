@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import Poll from '../Poll.vue'
+import DevopsPoll from '../DevopsPoll.vue'
 
-describe('Poll', () => {
+describe('DevopsPoll', () => {
   it('renders properly', () => {
-    const wrapper = mount(Poll)
+    const wrapper = mount(DevopsPoll)
     expect(wrapper.text()).toContain('Which one do you prefer?')
   })
 })
