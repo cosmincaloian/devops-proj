@@ -47,15 +47,15 @@ commands:
 jobs:
   build-client:
     docker:
-      - image: cimg/go:1.17
+      - image: cimg/node:18.16.0
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: Client build
           command: |
             cd client
-            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
+            npm install
+            npm run build
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -75,23 +75,22 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   test-client:
     docker:
-      - image: cimg/go:1.17
+      - image: cimg/node:18.16.0
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: Build
           command: |
             cd client
-            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
+            npm install
       - run:
           name: Client test
           command: |
-            docker run cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} npm run test:unit
+            npm run test:unit
       - run:
           name: Client lint
           command: |
-            docker run cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} npm run lint
+            npm run lint
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -105,8 +104,8 @@ jobs:
           name: Client scan
           command: |
             cd client
-            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
-            docker run cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} npm audit --audit-level=critical
+            npm install
+            npm audit --audit-level=critical
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -131,12 +130,6 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Push client image
-          command: |
-            cd client
-            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
-            docker push cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Push server image
           command: |
