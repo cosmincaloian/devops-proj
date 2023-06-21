@@ -75,17 +75,14 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dependencies
+          name: Get prod eks
           command: |
+            aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name devops-proj
             curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.1/2023-04-19/bin/linux/amd64/kubectl
             chmod +x ./kubectl
             mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
             echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
             kubectl version --short --client
-      - run:
-          name: Get prod eks
-          command: |
-            aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name devops-proj
             kubectl get pod
       - run:
           name: Deploy frontend objects
@@ -100,11 +97,6 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt install -y curl tar gzip curl
-            curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.1/2023-04-19/bin/linux/amd64/kubectl
-            chmod +x ./kubectl
-            mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
-            echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
-            kubectl version --short --client
       - run:
           name: Install AWS CLI v2
           command: |
