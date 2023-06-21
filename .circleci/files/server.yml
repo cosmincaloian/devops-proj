@@ -28,7 +28,7 @@ Resources:
       CidrBlock: !Ref VpcCIDR
       Tags:
         - Key: Name
-          Value: !Ref devops-${ID}
+          Value: !Sub devops-${ID}
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
