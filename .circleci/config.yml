@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   ms-teams-notifier: oktapodia/ms-teams-notifier@3.0.0
+  kubernetes: circleci/kubernetes@1.3.1
 
 jobs:
   build-server:
@@ -75,22 +76,16 @@ jobs:
     steps:
       - checkout
       - run: yum install tar gzip -y
-      - attach_workspace:
-          at: ~/
+      - kubernetes/install-kubectl
       - run:
           name: Get prod eks
           command: |
             aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name devops-proj
-            curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.1/2023-04-19/bin/linux/amd64/kubectl
-            chmod +x ./kubectl
-            mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
-            echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
-            kubectl version --short --client
-            kubectl get pod
-      - run:
-          name: Deploy frontend objects
-          command: |
-            kubectl create deployment devops --image=cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} --replicas=3
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: .circleci/files/deploy.yaml
+          resource-name: deployment/devops-deployment
+          show-kubectl-command: true
   smoke-test:
     docker:
       - image: circleci/node:13.8.0
