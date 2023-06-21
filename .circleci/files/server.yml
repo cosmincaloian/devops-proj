@@ -102,8 +102,6 @@ Resources:
         - t3.medium
       NodegroupName: devops-project-ng
       NodeRole: !Ref EKSNodeGroupRoleArn
-      ScalingConfig:
-        ScalingConfig
       Subnets:
         - !Ref PublicSubnet1
         - !Ref PublicSubnet2
