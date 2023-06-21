@@ -19,7 +19,7 @@ function add() {
 <template>
   <div class="poll">
     <div class="poll-title">Which one do you prefer?</div>
-    <div class="poll-item" @click="add" v-for="(item, index) in data" :key="item.label">
+    <div class="poll-item" @click="add" v-for="(item) in data" :key="item.label">
       <div class="poll-item-fill"></div>
       <div class="poll-item-info">
         <div class="poll-item-label">{{ item.label }}</div>
