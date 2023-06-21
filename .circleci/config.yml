@@ -80,11 +80,18 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Client test
+          name: Build
           command: |
             cd client
             docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
+      - run:
+          name: Client test
+          command: |
             docker run cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} npm run test:unit
+      - run:
+          name: Client lint
+          command: |
+            docker run cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} npm run lint
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -414,8 +421,13 @@ workflows:
           requires: [build-client]
       - scan-server:
           requires: [build-server]
-      - deploy-infrastructure:
+      - push-images:
           requires: [test-client, scan-client, scan-server]
+          filters:
+            branches:
+              only: [master]
+      - deploy-infrastructure:
+          requires: [push-images]
           filters:
             branches:
               only: [master]
