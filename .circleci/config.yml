@@ -64,6 +64,11 @@ jobs:
       - image: cimg/go:1.17
     steps:
       - checkout
+      - run:
+          name: Lint dockerfile
+          command: |
+            wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64
+            ./hadolint server/Dockerfile
       - setup_remote_docker
       - run:
           name: Server build
@@ -79,27 +84,20 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build
+          name: Testing
           command: |
             cd client
             npm install
-      - run:
-          name: Client test
-          command: |
             npm run test:unit
-      - run:
-          name: Client lint
-          command: |
             npm run lint
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   scan-client:
     docker:
-      - image: cimg/go:1.17
+      - image: cimg/node:18.16.0
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: Client scan
           command: |
