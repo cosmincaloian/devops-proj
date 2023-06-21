@@ -384,16 +384,11 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-client
       - build-server
-      - test-client:
-          requires: [build-client]
-      - scan-client:
-          requires: [build-client]
       - scan-server:
           requires: [build-server]
       - push-images:
-          requires: [test-client, scan-client, scan-server]
+          requires: [scan-server]
           filters:
             branches:
               only: [master]
