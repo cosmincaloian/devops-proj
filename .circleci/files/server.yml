@@ -7,19 +7,19 @@ Parameters:
     Type: String
   VpcCIDR:
     Type: String
-    Default: 172.0.0.0/16
+    Default: 173.0.0.0/16
   PublicSubnet1CIDR:
     Type: String
-    Default: 172.0.0.0/24
+    Default: 173.0.0.0/24
   PublicSubnet2CIDR:
     Type: String
-    Default: 172.0.1.0/24
+    Default: 173.0.1.0/24
   PrivateSubnet1CIDR:
     Type: String
-    Default: 172.0.3.0/24
+    Default: 173.0.3.0/24
   PrivateSubnet2CIDR:
     Type: String
-    Default: 172.0.4.0/24
+    Default: 173.0.4.0/24
 
 Resources:
   MyVPC:
