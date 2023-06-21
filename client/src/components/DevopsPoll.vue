@@ -10,6 +10,10 @@ const data = [
     "percentage": "20%"
   }
 ]
+
+function add() {
+  console.log('da')
+}
 </script>
 
 <template>
