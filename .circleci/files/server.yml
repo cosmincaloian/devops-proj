@@ -95,7 +95,7 @@ Resources:
     Properties:
       AmiType: AL2_x86_64
       CapacityType: ON_DEMAND
-      ClusterName: devops-project
+      ClusterName: !Ref EKSClusterInstances
       DiskSize: 20
       InstanceTypes:
         - t3.medium
