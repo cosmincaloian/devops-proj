@@ -39,7 +39,7 @@ Resources:
       DiskSize: 20
       InstanceTypes:
         - t3.medium
-      NodegroupName: Sub ${WorkId}-ng
+      NodegroupName: !Ref WorkId
       NodeRole: !Ref EKSNodeGroupRoleArn
       Subnets:
         - subnet-09d1bf4819361643e
