@@ -1,10 +1,12 @@
 FROM node:18.16.0-alpine
 
-COPY package*.json ./
+WORKDIR /var/www/app
+
+COPY package*.json /var/www/app/
 
 RUN npm install
 
-COPY . ./
+COPY . /var/www/app/
 
 EXPOSE 3000
 
