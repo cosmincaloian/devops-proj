@@ -12,18 +12,15 @@ commands:
             unzip awscli.zip
             ./aws/install
   destroy-environment:
-    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      WorkFlowId:
+      Id:
         type: string
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-            aws cloudformation delete-stack --stack-name udapeople-bk-<< parameters.WorkFlowId >>
-            aws cloudformation delete-stack --stack-name udapeople-fe-<< parameters.WorkFlowId >>
+            aws cloudformation delete-stack --stack-name devops-proj-server-<< parameters.Id >>
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -103,6 +100,7 @@ jobs:
       - checkout
       - run:
           name: Ensure back-end infrastructure exists
+          no_output_timeout: 30m
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/deploy_eks.yml \
@@ -110,68 +108,10 @@ jobs:
               --stack-name "devops-proj-server-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides WorkId="devops-${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment:
-          WorkFlowId: ${CIRCLE_WORKFLOW_ID:0:7}
-  configure-infrastructure:
+          Id: ${CIRCLE_WORKFLOW_ID:0:7}
+  deploy:
     docker:
-      - image: python:3.10-alpine3.16
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["35:de:83:cf:08:70:e2:a9:75:ce:bf:d5:35:3f:85:be"]
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update --no-cache ansible tar gzip curl
-      - run:
-          name: Install AWS CLI v2
-          command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli.zip"
-            unzip awscli.zip
-            ./aws/install
-      - run:
-          name: Configure server
-          command: |
-            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml
-      - destroy-environment:
-          WorkFlowId: ${CIRCLE_WORKFLOW_ID:0:7}
-  run-migrations:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt install -y tar gzip curl
-      - run:
-          name: Install AWS CLI v2
-          command: |
-            sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli.zip"
-            unzip awscli.zip
-            sudo ./aws/install
-      - run:
-          name: Run migrations
-          command: |
-            cd backend
-            npm install
-            npm run migrations > ~/project/backend/migrations_dump.txt
-      - run:
-          name: Send migration results to kvdb
-          command: |
-            cat ~/project/backend/migrations_dump.txt
-            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
-            then
-              curl --insecure https://kvdb.io/RpmAMzUhzuo94XLvtU5CtJ/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
-            fi
-      - revert-migrations:
-          WorkFlowId: ${CIRCLE_WORKFLOW_ID:0:7}
-  deploy-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
@@ -179,77 +119,16 @@ jobs:
           command: |
             sudo apt install -y tar gzip curl
       - run:
-          name: Install AWS CLI v2
+          name: Get prod eks
           command: |
-            sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli.zip"
-            unzip awscli.zip
-            sudo ./aws/install
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Get backend url
-          command: |
-            export BACKEND_IP=$(aws ec2 describe-instances \
-            --query "Reservations[*].Instances[*].[PublicIpAddress]" \
-            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --output text)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-            cat frontend/.env
+            aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name devops-${CIRCLE_WORKFLOW_ID:0:7}
+            kubectl get pod
       - run:
           name: Deploy frontend objects
           command: |
-            cd frontend
-            npm install
-            npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            kubectl create deployment devops --image=cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} --replicas=3
       - destroy-environment:
-          WorkFlowId: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:
-          WorkFlowId: ${CIRCLE_WORKFLOW_ID:0:7}
-  deploy-backend:
-    docker:
-      - image: python:3.10-alpine3.16
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["35:de:83:cf:08:70:e2:a9:75:ce:bf:d5:35:3f:85:be"]
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update --no-cache tar
-            apk add --update --no-cache gzip
-            apk add --update --no-cache nodejs
-            apk add --update --no-cache npm
-            apk add --update --no-cache curl
-            apk add --update --no-cache ansible
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Install AWS CLI v2
-          command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli.zip"
-            unzip awscli.zip
-            ./aws/install
-      - run:
-          name: Deploy backend
-          command: |
-            cd backend
-            npm i
-            npm run build
-            cd ..
-            ## Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
-            cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
-            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
-      - destroy-environment:
-          WorkFlowId: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:
-          WorkFlowId: ${CIRCLE_WORKFLOW_ID:0:7}
+          Id: devops-${CIRCLE_WORKFLOW_ID:0:7}
   smoke-test:
     docker:
       - image: circleci/node:13.8.0
@@ -373,8 +252,8 @@ workflows:
               only: [master]
       - deploy-infrastructure:
           requires: [push-images]
-#      - deploy:
-#          requires: [run-migrations]
+      - deploy:
+          requires: [deploy-infrastructure]
 #      - smoke-test:
 #          requires: [deploy-backend, deploy-frontend]
 #      - cloudfront-update:
