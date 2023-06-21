@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Poll from './components/Poll.vue'
+import DevopsPoll from './components/DevopsPoll.vue'
 </script>
 
 <template>
   <main>
-    <Poll />
+    <DevopsPoll />
   </main>
 </template>
 
