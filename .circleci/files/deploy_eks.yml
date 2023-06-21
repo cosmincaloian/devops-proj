@@ -19,7 +19,7 @@ Resources:
     Properties:
       KubernetesNetworkConfig:
         IpFamily: ipv4
-      Name: ${WorkId}
+      Name: !Ref WorkId
       ResourcesVpcConfig:
         SubnetIds:
           - subnet-09d1bf4819361643e
@@ -39,7 +39,7 @@ Resources:
       DiskSize: 20
       InstanceTypes:
         - t3.medium
-      NodegroupName: ${WorkId}-ng
+      NodegroupName: Sub ${WorkId}-ng
       NodeRole: !Ref EKSNodeGroupRoleArn
       Subnets:
         - subnet-09d1bf4819361643e
