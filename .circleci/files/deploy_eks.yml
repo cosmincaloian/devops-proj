@@ -2,7 +2,7 @@ Description: >
   Devops project
 
 Parameters:
-  WorkId:
+  EKSName:
     Description: Unique identifier.
     Type: String
     Default: devops-proj
@@ -19,7 +19,7 @@ Resources:
     Properties:
       KubernetesNetworkConfig:
         IpFamily: ipv4
-      Name: !Ref WorkId
+      Name: !Ref EKSName
       ResourcesVpcConfig:
         SubnetIds:
           - subnet-09d1bf4819361643e
@@ -28,7 +28,7 @@ Resources:
       RoleArn: !Ref EKSRoleArn
       Tags:
         - Key: Name
-          Value: !Sub ${WorkId}
+          Value: !Sub ${EKSName}
       Version: 1.27
   EKSClusterNodeGroup:
     Type: AWS::EKS::Nodegroup
@@ -39,11 +39,11 @@ Resources:
       DiskSize: 20
       InstanceTypes:
         - t3.medium
-      NodegroupName: !Ref WorkId
+      NodegroupName: !Ref EKSName
       NodeRole: !Ref EKSNodeGroupRoleArn
       Subnets:
         - subnet-09d1bf4819361643e
         - subnet-0693f59a0d958a86c
         - subnet-061e3dc3c236394ee
       Tags:
-        Name: !Sub ${WorkId}-eks-ng
+        Name: !Sub ${EKSName}-eks-ng
