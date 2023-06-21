@@ -74,6 +74,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run: yum install tar gzip -y
       - attach_workspace:
           at: ~/
       - run:
