@@ -75,15 +75,15 @@ jobs:
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   test-client:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/go:1.17
     steps:
       - checkout
       - run:
           name: Client test
           command: |
             cd client
-            npm install
-            npm run test:unit
+            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
+            docker run cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} npm run test:unit
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -96,8 +96,8 @@ jobs:
           name: Client scan
           command: |
             cd client
-            npm install
-            npm audit --audit-level=critical
+            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
+            docker run cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} npm audit --audit-level=critical
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -110,8 +110,8 @@ jobs:
           name: Back-end scan
           command: |
             cd server
-            npm install
-            npm audit --audit-level=critical
+            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
+            docker run cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} npm audit --audit-level=critical
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
