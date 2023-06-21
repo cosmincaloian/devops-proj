@@ -45,26 +45,6 @@ commands:
             fi
 
 jobs:
-  build-client:
-    docker:
-      - image: cimg/go:1.17
-    steps:
-      - checkout
-      - run:
-          name: Lint dockerfile
-          command: |
-            wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64
-            chmod +x ./hadolint
-            ./hadolint server/Dockerfile
-      - setup_remote_docker
-      - run:
-          name: Server build
-          command: |
-            cd server
-            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
-      - ms-teams-notifier/report:
-          only_on_fail: true
-          webhook_url: $MS_TEAMS_WEBHOOK_URL
   build-server:
     docker:
       - image: cimg/go:1.17
@@ -82,37 +62,6 @@ jobs:
           command: |
             cd server
             docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
-      - ms-teams-notifier/report:
-          only_on_fail: true
-          webhook_url: $MS_TEAMS_WEBHOOK_URL
-  test-client:
-    docker:
-      - image: cimg/go:1.17
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Test client
-          command: |
-            cd client
-            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
-            docker run cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} npm run test:unit
-            docker run cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} npm run lint
-      - ms-teams-notifier/report:
-          only_on_fail: true
-          webhook_url: $MS_TEAMS_WEBHOOK_URL
-  scan-client:
-    docker:
-      - image: cimg/go:1.17
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Client scan
-          command: |
-            cd client
-            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
-            docker run cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} npm audit --audit-level=critical
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
