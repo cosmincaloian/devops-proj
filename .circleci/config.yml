@@ -47,28 +47,27 @@ commands:
 jobs:
   build-client:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/go:1.17
     steps:
       - checkout
       - run:
           name: Client build
           command: |
             cd client
-            npm install
-            npm run build
+            docker build -t cosmincaloian/devops-client:${CIRCLE_WORKFLOW_ID:0:7} .
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
   build-server:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/go:1.17
     steps:
       - checkout
       - run:
           name: Server build
           command: |
             cd server
-            npm install
+            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -124,17 +123,17 @@ jobs:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
-              --template-file .circleci/files/backend.yml \
-              --tags project=udapeople-bk \
-              --stack-name "udapeople-bk-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --template-file .circleci/files/server.yml \
+              --tags project=devops-proj \
+              --stack-name "devops-proj-server-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
-              --template-file .circleci/files/frontend.yml \
-              --tags project=udapeople-fe \
-              --stack-name "udapeople-fe-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --template-file .circleci/files/client.yml \
+              --tags project=devops-proj \
+              --stack-name "devops-proj-client-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Add back-end ip to ansible inventory
