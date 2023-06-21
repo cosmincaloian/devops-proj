@@ -1,12 +1,5 @@
 <script setup lang="ts">
 import DevopsPollItem from './DevopsPollItem.vue'
-import * as process from "process";
-
-function _refresh() {
-// const response = await fetch(process.env.SERVER_URL + '/poll');
-// const data = await response.json();
-
-}
 
 const data = [
   {
