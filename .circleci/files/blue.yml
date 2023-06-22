@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: devops-deployment-${CIRCLE_WORKFLOW_ID}
+  name: devops-${CIRCLE_WORKFLOW_ID}
   labels:
     app: devops-${CIRCLE_WORKFLOW_ID}
     tier: devops
@@ -27,7 +27,7 @@ metadata:
   labels:
     app: devops-${CIRCLE_WORKFLOW_ID}
     tier: devops
-  name: devops-deployment-${CIRCLE_WORKFLOW_ID}
+  name: blue
 spec:
   ports:
     - nodePort: 30301
