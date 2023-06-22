@@ -129,7 +129,7 @@ jobs:
           name: Backend smoke test.
           command: |
             kubectl get svc blue
-            export SERVER_HOST=$(kubectl get svc blue -o jsonpath="{.items[0].status.loadBalancer.ingress[0].hostname}")
+            export SERVER_HOST=$(kubectl get svc blue -o jsonpath="{.items.status.loadBalancer.ingress[0].hostname}")
             export API_URL="http://${BACKEND_IP}:30304"
             echo "${API_URL}"
             sleep 2
