@@ -82,7 +82,7 @@ jobs:
           command: |
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli.zip"
             unzip awscli.zip
-            ./aws/install
+            sudo ./aws/install
       - run:
           name: Get prod eks
           command: |
