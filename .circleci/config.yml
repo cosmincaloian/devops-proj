@@ -129,7 +129,7 @@ jobs:
           name: Backend smoke test.
           command: |
             export SERVER_HOST=$(kubectl get svc devops-deployment-${CIRCLE_WORKFLOW_ID} -o jsonpath="{.items[0].status.loadBalancer.ingress[0].hostname}")
-            export API_URL="http://${BACKEND_IP}:30301"
+            export API_URL="http://${BACKEND_IP}:30304"
             echo "${API_URL}"
             sleep 2
             if curl "${API_URL}/poll" | grep "CircleCi"
