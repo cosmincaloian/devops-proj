@@ -91,7 +91,7 @@ jobs:
           envsubst: true
           get-rollout-status: true
           resource-file-path: .circleci/files/deploy.yml
-          resource-name: deployment/devops-deployment
+          resource-name: deployment/devops-deployment-${CIRCLE_WORKFLOW_ID}
           show-kubectl-command: true
   smoke-test:
     docker:
