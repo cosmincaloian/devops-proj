@@ -82,8 +82,9 @@ jobs:
           command: |
             aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name devops-proj
       - kubernetes/create-or-update-resource:
+          envsubst: true
           get-rollout-status: true
-          resource-file-path: .circleci/files/deploy.yml
+          resource-file-path: .circleci/files/deploy.yaml
           resource-name: deployment/devops-deployment
           show-kubectl-command: true
   smoke-test:
