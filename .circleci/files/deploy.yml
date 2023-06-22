@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: devops
-          image: cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID}
+          image: cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7}
           ports:
             - containerPort: 3000
