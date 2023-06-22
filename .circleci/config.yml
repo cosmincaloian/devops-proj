@@ -72,11 +72,17 @@ jobs:
               --no-fail-on-empty-changeset
   deploy:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/base:stable
     steps:
       - checkout
-      - run: yum install tar gzip -y
+      - run: sudo apt  install tar gzip -y
       - kubernetes/install-kubectl
+      - run:
+          name: Install AWS CLI v2
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli.zip"
+            unzip awscli.zip
+            ./aws/install
       - run:
           name: Get prod eks
           command: |
