@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
         - name: devops
-          image: cosmincaloian/devops-server:${TAG}
+          image: cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID}
           ports:
             - containerPort: 3000

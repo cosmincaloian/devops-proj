@@ -21,7 +21,7 @@ jobs:
           name: Server build
           command: |
             cd server
-            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
+            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID} .
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -35,8 +35,8 @@ jobs:
           name: Back-end scan
           command: |
             cd server
-            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
-            docker run cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} npm audit --audit-level=critical
+            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID} .
+            docker run cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID} npm audit --audit-level=critical
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -50,9 +50,9 @@ jobs:
           name: Push server image
           command: |
             cd server
-            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7} .
+            docker build -t cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID} .
             echo $DOCKER_HUB_PASS | docker login --username 'cosmincaloian' --password-stdin
-            docker push cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7}
+            docker push cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID}
       - ms-teams-notifier/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
@@ -87,10 +87,6 @@ jobs:
           name: Get prod eks
           command: |
             aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name devops-proj
-      - run:
-          name: Set envs
-          command: |
-            export TAG=${CIRCLE_WORKFLOW_ID:0:7}
       - kubernetes/create-or-update-resource:
           envsubst: true
           get-rollout-status: true
