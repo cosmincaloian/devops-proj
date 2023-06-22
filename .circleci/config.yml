@@ -87,6 +87,10 @@ jobs:
           name: Get prod eks
           command: |
             aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name devops-proj
+      - run:
+          name: Set envs
+          command: |
+            export TAG=${CIRCLE_WORKFLOW_ID:0:7}
       - kubernetes/create-or-update-resource:
           envsubst: true
           get-rollout-status: true

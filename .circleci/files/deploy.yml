@@ -4,6 +4,7 @@ metadata:
   name: devops-deployment-${CIRCLE_WORKFLOW_ID}
   labels:
     app: devops-${CIRCLE_WORKFLOW_ID}
+    tier: devops
 spec:
   replicas: 3
   selector:
@@ -16,6 +17,6 @@ spec:
     spec:
       containers:
         - name: devops
-          image: cosmincaloian/devops-server:${CIRCLE_WORKFLOW_ID:0:7}
+          image: cosmincaloian/devops-server:${TAG}
           ports:
             - containerPort: 3000
