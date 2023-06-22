@@ -4,18 +4,19 @@ orbs:
   ms-teams-notifier: oktapodia/ms-teams-notifier@3.0.0
   kubernetes: circleci/kubernetes@1.3.1
 
-destroy-environment:
-  parameters:
-    ID:
-      type: string
-  steps:
-    - kubernetes/install-kubectl
-    - run:
-        name: Destroy Deployment
-        when: on_fail
-        command: |
-          kubectl delete deploy devops-<< parameters.WorkFlowId >>
-          kubectl delete svc blue
+commands:
+  destroy-environment:
+    parameters:
+      ID:
+        type: string
+    steps:
+      - kubernetes/install-kubectl
+      - run:
+          name: Destroy Deployment
+          when: on_fail
+          command: |
+            kubectl delete deploy devops-<< parameters.WorkFlowId >>
+            kubectl delete svc blue
 
 
 jobs:
