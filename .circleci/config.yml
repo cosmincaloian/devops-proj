@@ -84,7 +84,7 @@ jobs:
               --template-file .circleci/files/deploy_eks.yml \
               --tags project=devops-proj \
               --stack-name "devops-proj-server" \
-              --no-fail-on-empty-changeset
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" 
   deploy-blue:
     docker:
       - image: cimg/base:stable
