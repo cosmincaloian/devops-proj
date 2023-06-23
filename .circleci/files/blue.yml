@@ -30,8 +30,7 @@ metadata:
   name: blue
 spec:
   ports:
-    - nodePort: 30304
-      port: 30304
+    - port: 30304
       protocol: TCP
       targetPort: 3000
   selector:
