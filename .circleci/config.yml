@@ -132,7 +132,7 @@ jobs:
             export SERVER_HOST=$(kubectl get svc blue -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
             export API_URL="http://${SERVER_HOST}:30304"
             echo "${API_URL}"
-            sleep 2
+            sleep 60
             if curl "${API_URL}/poll" | grep "CircleCi"
             then
                 exit 0
