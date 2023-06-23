@@ -160,7 +160,6 @@ jobs:
             aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name devops-proj
       - kubernetes/create-or-update-resource:
           envsubst: true
-          get-rollout-status: true
           resource-file-path: .circleci/files/green.yml
           resource-name: service/green
           show-kubectl-command: true
