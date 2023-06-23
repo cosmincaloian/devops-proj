@@ -2,6 +2,8 @@ Description: >
   Devops project
 
 Parameters:
+  ID:
+    Type: String
   EKSName:
     Description: Unique identifier.
     Type: String
@@ -39,7 +41,7 @@ Resources:
       DiskSize: 20
       InstanceTypes:
         - t3.medium
-      NodegroupName: !Ref EKSName
+      NodegroupName: !Sub ${EKSName}-${ID}
       NodeRole: !Ref EKSNodeGroupRoleArn
       Subnets:
         - subnet-09d1bf4819361643e
