@@ -4,7 +4,7 @@ WORKDIR /var/www/app
 
 COPY package*.json /var/www/app/
 
-RUN npm install
+RUNi npm install
 
 COPY . /var/www/app/
 
