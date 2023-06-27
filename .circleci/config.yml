@@ -163,6 +163,10 @@ jobs:
           resource-file-path: .circleci/files/green.yml
           resource-name: service/green
           show-kubectl-command: true
+      - run:
+          name: Verification
+          command: |
+            kubectl get all
       # - destroy-environment:
       #     ID: ${CIRCLE_WORKFLOW_ID:0:7}
   cleanup:
