@@ -24,9 +24,9 @@ Resources:
       Name: !Ref EKSName
       ResourcesVpcConfig:
         SubnetIds:
-          - subnet-09d1bf4819361643e
-          - subnet-0693f59a0d958a86c
-          - subnet-061e3dc3c236394ee
+          - subnet-0695b766b7f33c95e
+          - subnet-010aaabf0d1a14e8b
+          - subnet-098ad8c4b2da8786f
       RoleArn: !Ref EKSRoleArn
       Tags:
         - Key: Name
@@ -44,8 +44,8 @@ Resources:
       NodegroupName: !Sub ${EKSName}-${ID}
       NodeRole: !Ref EKSNodeGroupRoleArn
       Subnets:
-        - subnet-09d1bf4819361643e
-        - subnet-0693f59a0d958a86c
-        - subnet-061e3dc3c236394ee
+        - subnet-0695b766b7f33c95e
+        - subnet-010aaabf0d1a14e8b
+        - subnet-098ad8c4b2da8786f
       Tags:
         Name: !Sub ${EKSName}-eks-ng
