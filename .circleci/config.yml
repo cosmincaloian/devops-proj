@@ -187,6 +187,10 @@ jobs:
           command: |
             aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name devops-proj
       - run:
+          name: Verification
+          command: |
+            kubectl get all
+      - run:
           name: Clean
           command: |
             kubectl delete svc blue
