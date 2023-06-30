@@ -10,7 +10,7 @@ Parameters:
     Default: devops-proj
   EKSRoleArn:
     Type: String
-    Default: arn:aws:iam::432737993985:role/myEKSClusterRole
+    Default: arn:aws:iam::432737993985:role/myEksClusterRole
   EKSNodeGroupRoleArn:
     Type: String
     Default: arn:aws:iam::432737993985:role/myEKSWorkerNodeRole
